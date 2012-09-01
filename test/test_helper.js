@@ -6,3 +6,4 @@ qunitTap(QUnit, require("sys").puts, { noPlan: true });
 
 QUnit.init();
 exports.assert = QUnit;
+exports.Seqdiag = require('../lib/seqdiag');

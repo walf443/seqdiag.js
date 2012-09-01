@@ -3,6 +3,7 @@ require('./test_helper.js');
     "use strict";
 
     QUnit.test('Parser', function() {
+        Seqdiag.Parser.parse("test");
         QUnit.ok(1);
     });
 
