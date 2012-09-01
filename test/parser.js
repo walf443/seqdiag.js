@@ -39,13 +39,19 @@ require('./test_helper.js');
         q.equal(ast[1]["stmt"][1][1]["attributes"][0], "attributes", "it should be attribute token");
         q.deepEqual(ast[1]["stmt"][1][1]["attributes"][1], { "label": "bbb" }, "attirbute values ok");
 
-        // for edge
+        // for edge A -> B
         q.equal(ast[1]["stmt"][2][0], "edge", "edge ok");
         q.equal(ast[1]["stmt"][2][1], "normal", "edge ok");
+        q.equal(ast[1]["stmt"][2][2], "A", "edge left side OK");
+        q.equal(ast[1]["stmt"][2][3], "B", "edge right side OK");
+        q.deepEqual(ast[1]["stmt"][2][4], ["attributes", { "label": "A to B" }], "edge has attributes");
 
-
+        // for edge B --> A
         q.equal(ast[1]["stmt"][3][0], "edge", "edge ok");
         q.equal(ast[1]["stmt"][3][1], "dotted", "edge ok");
+        q.equal(ast[1]["stmt"][3][2], "B", "edge left side OK");
+        q.equal(ast[1]["stmt"][3][3], "A", "edge right side OK");
+        q.equal(ast[1]["stmt"][3][4], null, "edge has not attributes ");
     });
 
     q.start();
