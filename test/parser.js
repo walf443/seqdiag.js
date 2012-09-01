@@ -9,7 +9,6 @@ require('./test_helper.js');
             "B[label = \"bbb\"];\n" +
         "}");
 
-        console.log(ast);
         q.ok(ast instanceof Array, "should return tuple");
         q.equal(ast[0], "graph", "token should be graph");
 
@@ -18,7 +17,14 @@ require('./test_helper.js');
 
         q.ok(ast[1]["stmt"] instanceof Array, "graph attribute should have stmt");
 
+        // for node A
         q.equal(ast[1]["stmt"][0][0], "node", "first statement should be node");
+        q.equal(typeof ast[1]["stmt"][0][1] , "object", "node should have attributes");
+        q.equal(ast[1]["stmt"][0][1]["id"], "A", "node id should be A");
+
+        q.equal(ast[1]["stmt"][1][0], "node", "first statement should be node");
+        q.equal(typeof ast[1]["stmt"][1][1] , "object", "node should have attributes");
+        q.equal(ast[1]["stmt"][1][1]["id"], "B", "node id should be B");
     });
 
     q.start();
