@@ -7,6 +7,7 @@ require('./test_helper.js');
         var ast = Seqdiag.Parser.parse("seqdiag {\n" + 
             "A[label = \"aaa\", foo = \"bar\"];\n" +
             "B[label = \"bbb\"];\n" +
+            "A -> B;" +
         "}");
 
         q.ok(ast instanceof Array, "should return tuple");
