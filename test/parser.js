@@ -7,7 +7,8 @@ require('./test_helper.js');
         var ast = Seqdiag.Parser.parse("seqdiag {\n" + 
             "A[label = \"aaa\", foo = \"bar\"];\n" +
             "B[label = \"bbb\"];\n" +
-            "A -> B;" +
+            "A -> B [ label = \"A to B\" ];" +
+            "B --> A;" +
         "}");
 
         q.ok(ast instanceof Array, "should return tuple");
@@ -37,6 +38,14 @@ require('./test_helper.js');
         // for node B's attribute
         q.equal(ast[1]["stmt"][1][1]["attributes"][0], "attributes", "it should be attribute token");
         q.deepEqual(ast[1]["stmt"][1][1]["attributes"][1], { "label": "bbb" }, "attirbute values ok");
+
+        // for edge
+        q.equal(ast[1]["stmt"][2][0], "edge", "edge ok");
+        q.equal(ast[1]["stmt"][2][1], "normal", "edge ok");
+
+
+        q.equal(ast[1]["stmt"][3][0], "edge", "edge ok");
+        q.equal(ast[1]["stmt"][3][1], "dotted", "edge ok");
     });
 
     q.start();
