@@ -54,7 +54,15 @@
 			path.setAttribute("d", "M  " + lx + " " + y + " L " + rx + " " + y);
 			path.setAttribute("stroke", "#000000");
 			console.log([left, right]);
+			var polygon = document.createElementNS(svgns, "polygon");
+			polygon.setAttribute("stroke", "#000000");
+			if ( lx < rx ) {
+				polygon.setAttribute("points", [[rx - 5, y - 5], [rx - 5, y + 5], [rx, y]].map (function(item) { return item.join(",") }).join(" "));
+			} else {
+				polygon.setAttribute("points", [[rx + 5, y - 5], [rx + 5, y + 5], [rx, y]].map (function(item) { return item.join(",") }).join(" "));
+			}
 			svg.appendChild(path);
+			svg.appendChild(polygon);
 			return path;
 		}
 		var target = document.getElementById('seqdiag-text');
