@@ -53,7 +53,14 @@
 			var rx = parseInt(right.getAttribute('x')) + ( parseInt(right.getAttribute('width')) / 2.0 );
 			path.setAttribute("d", "M  " + lx + " " + y + " L " + rx + " " + y);
 			path.setAttribute("stroke", "#000000");
-			console.log([left, right]);
+			switch ( stmt[1] ) {
+				case "dotted":
+					path.setAttribute("stroke-dasharray", 5);
+					break;
+
+				default:
+					break;
+			}
 			var polygon = document.createElementNS(svgns, "polygon");
 			polygon.setAttribute("stroke", "#000000");
 			if ( lx < rx ) {
@@ -91,17 +98,15 @@
 				default:
 					break;
 			}
-			console.log(stmt);
 		}
-		console.log(nodes);
 		for ( var j = 0; j < nodes.length; j++ ) {
 			var id = nodes[j];
 			var target = svg.getElementById('rect-' + id);
 			var path = document.createElementNS(svgns, "path");
 			var x = parseInt(target.getAttribute("x")) + parseInt(target.getAttribute("width")) / 2.0;
-			console.log(x);
 			path.setAttribute("d", "M " + x + " " + 70 + " L " + x + " " + start_y);
 			path.setAttribute("stroke", "#000000");
+			path.setAttribute("stroke-dasharray", 5);
 			svg.appendChild(path);
 		}
 		var figure = document.createElement("figure");
