@@ -12,10 +12,10 @@
 			B;
 			C;
 
-			A -> B;
-			B -> C;
-			C --> B;
-			B --> A;
+			A -> B [label =  "A to B"];
+			B -> C [label = "B to C"];
+			C --> B [label = "C to B"];
+			B --> A [label = " return to A"];
 		}
 	</script>
 
@@ -61,6 +61,7 @@
 				default:
 					break;
 			}
+
 			var polygon = document.createElementNS(svgns, "polygon");
 			polygon.setAttribute("stroke", "#000000");
 			if ( lx < rx ) {
@@ -68,6 +69,21 @@
 			} else {
 				polygon.setAttribute("points", [[rx + 5, y - 5], [rx + 5, y + 5], [rx, y]].map (function(item) { return item.join(",") }).join(" "));
 			}
+
+			console.log(stmt);
+			if ( stmt[4] ) {
+				var attr = stmt[4];
+				console.log(attr);
+				if ( attr[1]["label"] ) {
+					var textbox = document.createElementNS(svgns, "text");
+					textbox.textContent = attr[1]["label"];
+					textbox.setAttribute("stroke", "#000000");
+					textbox.setAttribute("x", lx);
+					textbox.setAttribute("y", y);
+					svg.appendChild(textbox);
+				}
+			}
+
 			svg.appendChild(path);
 			svg.appendChild(polygon);
 			return path;
