@@ -43,6 +43,19 @@
 			svg.appendChild(textbox);
 			return [rect, textbox];
 		}
+
+		function drawEdge(svg, stmt, y)
+		{
+			var path = document.createElementNS(svgns, "path");
+			var left = svg.getElementById('rect-' + stmt[2]);
+			var right = svg.getElementById('rect-' + stmt[3]);
+			var lx = parseInt(left.getAttribute('x')) + ( parseInt(left.getAttribute('width')) / 2.0 );
+			var rx = parseInt(right.getAttribute('x')) + ( parseInt(right.getAttribute('width')) / 2.0 );
+			path.setAttribute("d", "M  " + lx + " " + y + " L " + rx + " " + y);
+			path.setAttribute("stroke", "#000000");
+			console.log([left, right]);
+			svg.appendChild(path);
+		}
 		var target = document.getElementById('seqdiag-text');
 		var inplace = document.getElementById('seqdiag');
 
@@ -57,19 +70,11 @@
 			var stmt = AST[1].stmt[i];
 			switch (stmt[0]) {
 				case "node":
-					var node = drawNode(svg, stmt, start_x);
+					drawNode(svg, stmt, start_x);
 					start_x += 200 + 50;
 					break;
 				case "edge":
-					var path = document.createElementNS(svgns, "path");
-					var left = svg.getElementById('rect-' + stmt[2]);
-					var right = svg.getElementById('rect-' + stmt[3]);
-					var lx = parseInt(left.getAttribute('x')) + ( parseInt(left.getAttribute('width')) / 2.0 );
-					var rx = parseInt(right.getAttribute('x')) + ( parseInt(right.getAttribute('width')) / 2.0 );
-					path.setAttribute("d", "M  " + lx + " " + start_y + " L " + rx + " " + start_y);
-					path.setAttribute("stroke", "#000000");
-					console.log([left, right]);
-					svg.appendChild(path);
+					drawEdge(svg, stmt, start_y);
 					start_y += 100;
 					break;
 				default:
