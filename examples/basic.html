@@ -55,6 +55,7 @@
 			path.setAttribute("stroke", "#000000");
 			console.log([left, right]);
 			svg.appendChild(path);
+			return path;
 		}
 		var target = document.getElementById('seqdiag-text');
 		var inplace = document.getElementById('seqdiag');
@@ -66,10 +67,12 @@
 		// svg.setAttribute("hegith", 600);
 		var start_x = 0;
 		var start_y = 100;
+		var nodes = [];
 		for (var i=0; i < AST[1].stmt.length; i++ ) {
 			var stmt = AST[1].stmt[i];
 			switch (stmt[0]) {
 				case "node":
+					nodes.push(stmt[1].id);
 					drawNode(svg, stmt, start_x);
 					start_x += 200 + 50;
 					break;
@@ -81,6 +84,17 @@
 					break;
 			}
 			console.log(stmt);
+		}
+		console.log(nodes);
+		for ( var j = 0; j < nodes.length; j++ ) {
+			var id = nodes[j];
+			var target = svg.getElementById('rect-' + id);
+			var path = document.createElementNS(svgns, "path");
+			var x = parseInt(target.getAttribute("x")) + parseInt(target.getAttribute("width")) / 2.0;
+			console.log(x);
+			path.setAttribute("d", "M " + x + " " + 70 + " L " + x + " " + start_y);
+			path.setAttribute("stroke", "#000000");
+			svg.appendChild(path);
 		}
 		var figure = document.createElement("figure");
 		var caption = document.createElement("figcaption");
