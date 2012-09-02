@@ -12,7 +12,7 @@
 			B;
 			C;
 
-			A -> B [label =  "A to B"];
+			A -> B [label =  "start session(A to B)"];
 			B -> C [label = "B to C"];
 			C --> B [label = "C to B"];
 			B --> A [label = " return to A"];
@@ -78,8 +78,8 @@
 					var textbox = document.createElementNS(svgns, "text");
 					textbox.textContent = attr[1]["label"];
 					textbox.setAttribute("stroke", "#000000");
-					textbox.setAttribute("x", lx);
-					textbox.setAttribute("y", y);
+					textbox.setAttribute("x", lx + 5 );
+					textbox.setAttribute("y", y - 5);
 					svg.appendChild(textbox);
 				}
 			}
