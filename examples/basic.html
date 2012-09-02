@@ -78,6 +78,9 @@
 		var AST = SeqdiagParser.parse(target.innerText);
 
 		var svg = document.createElementNS(svgns, "svg");
+		var desc = document.createElementNS(svgns, "desc");
+		desc.textContent = target.innerText;
+		svg.appendChild(desc);
 		// svg.setAttribute("width", 600);
 		// svg.setAttribute("hegith", 600);
 		var start_x = 0;
@@ -110,9 +113,6 @@
 			svg.appendChild(path);
 		}
 		var figure = document.createElement("figure");
-		var caption = document.createElement("figcaption");
-		caption.innerText = target.innerText;
-		// figure.appendChild(caption);
 		figure.appendChild(svg);
 		inplace.appendChild(figure);
 	</script>
