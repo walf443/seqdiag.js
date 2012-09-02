@@ -23,7 +23,7 @@
 
 	<script type="text/javascript">
 		var svgns = "http://www.w3.org/2000/svg";
-		function createNode(stmt, x)
+		function drawNode(svg, stmt, x)
 		{
 			var rect = document.createElementNS(svgns, "rect");
 			rect.setAttribute("id", "rect-" + stmt[1].id);
@@ -39,6 +39,8 @@
 			textbox.setAttribute("y", 50);
 			textbox.textContent = stmt[1].id;
 
+			svg.appendChild(rect);
+			svg.appendChild(textbox);
 			return [rect, textbox];
 		}
 		var target = document.getElementById('seqdiag-text');
@@ -55,9 +57,7 @@
 			var stmt = AST[1].stmt[i];
 			switch (stmt[0]) {
 				case "node":
-					var node = createNode(stmt, start_x);
-					svg.appendChild(node[0]);
-					svg.appendChild(node[1]);
+					var node = drawNode(svg, stmt, start_x);
 					start_x += 200 + 50;
 					break;
 				case "edge":
