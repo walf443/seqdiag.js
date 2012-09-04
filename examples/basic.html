@@ -88,49 +88,51 @@
 			svg.appendChild(polygon);
 			return path;
 		}
-		var target = document.getElementById('seqdiag-text');
-		var inplace = document.getElementById('seqdiag');
+		window.onload = function() {
+			var target = document.getElementById('seqdiag-text');
+			var inplace = document.getElementById('seqdiag');
 
-		var AST = SeqdiagParser.parse(target.innerText);
+			var AST = SeqdiagParser.parse(target.innerText);
 
-		var svg = document.createElementNS(svgns, "svg");
-		var desc = document.createElementNS(svgns, "desc");
-		desc.textContent = target.innerText;
-		svg.appendChild(desc);
-		// svg.setAttribute("width", 600);
-		// svg.setAttribute("hegith", 600);
-		var start_x = 0;
-		var start_y = 100;
-		var nodes = [];
-		for (var i=0; i < AST[1].stmt.length; i++ ) {
-			var stmt = AST[1].stmt[i];
-			switch (stmt[0]) {
-				case "node":
-					nodes.push(stmt[1].id);
-					drawNode(svg, stmt, start_x);
-					start_x += 200 + 50;
-					break;
-				case "edge":
-					drawEdge(svg, stmt, start_y);
-					start_y += 100;
-					break;
-				default:
-					break;
+			var svg = document.createElementNS(svgns, "svg");
+			var desc = document.createElementNS(svgns, "desc");
+			desc.textContent = target.innerText;
+			svg.appendChild(desc);
+			// svg.setAttribute("width", 600);
+			// svg.setAttribute("hegith", 600);
+			var start_x = 0;
+			var start_y = 100;
+			var nodes = [];
+			for (var i=0; i < AST[1].stmt.length; i++ ) {
+				var stmt = AST[1].stmt[i];
+				switch (stmt[0]) {
+					case "node":
+						nodes.push(stmt[1].id);
+						drawNode(svg, stmt, start_x);
+						start_x += 200 + 50;
+						break;
+					case "edge":
+						drawEdge(svg, stmt, start_y);
+						start_y += 100;
+						break;
+					default:
+						break;
+				}
 			}
-		}
-		for ( var j = 0; j < nodes.length; j++ ) {
-			var id = nodes[j];
-			var target = svg.getElementById('rect-' + id);
-			var path = document.createElementNS(svgns, "path");
-			var x = parseInt(target.getAttribute("x")) + parseInt(target.getAttribute("width")) / 2.0;
-			path.setAttribute("d", "M " + x + " " + 70 + " L " + x + " " + start_y);
-			path.setAttribute("stroke", "#000000");
-			path.setAttribute("stroke-dasharray", 5);
-			svg.appendChild(path);
-		}
-		var figure = document.createElement("figure");
-		figure.appendChild(svg);
-		inplace.appendChild(figure);
+			for ( var j = 0; j < nodes.length; j++ ) {
+				var id = nodes[j];
+				var target = svg.getElementById('rect-' + id);
+				var path = document.createElementNS(svgns, "path");
+				var x = parseInt(target.getAttribute("x")) + parseInt(target.getAttribute("width")) / 2.0;
+				path.setAttribute("d", "M " + x + " " + 70 + " L " + x + " " + start_y);
+				path.setAttribute("stroke", "#000000");
+				path.setAttribute("stroke-dasharray", 5);
+				svg.appendChild(path);
+			}
+			var figure = document.createElement("figure");
+			figure.appendChild(svg);
+			inplace.appendChild(figure);
+		};
 	</script>
 </body>
 </html>
