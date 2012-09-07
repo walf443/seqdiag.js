@@ -26,14 +26,21 @@ require('./test_helper.js');
     q.test("Diagram", function() {
         var diagram = new Seqdiag.Diagram();
         q.ok(diagram instanceof Seqdiag.Diagram, "instance OK");
+
         var nodeA = new Seqdiag.Node("A");
         diagram.addNode(nodeA);
-        q.equal(diagram.nodes().length, 1, "node A should added");
+        q.equal(diagram.nodes().length, 1, "node A should be added");
         q.strictEqual(diagram.getNodeById("A"), nodeA, "getNodeById should return nodeA");
+
         var nodeB = new Seqdiag.Node("B");
         diagram.addNode(nodeB);
-        q.equal(diagram.nodes().length, 2, "noe B should added");
+        q.equal(diagram.nodes().length, 2, "noe B should be added");
         q.strictEqual(diagram.getNodeById("B"), nodeB, "getNodeById should return nodeB");
+
+        var edgeAB = new Seqdiag.Edge(nodeA, nodeB);
+        diagram.addEdge(edgeAB);
+        q.equal(diagram.edges.length, 1, "edgeAB should be added");
+
     });
 
 })();
