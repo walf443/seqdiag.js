@@ -4,6 +4,7 @@
 	<meta charset="utf-8" />
 	<title>basic</title>
 	<script type="text/javascript" src="../lib/seqdiag/parser.js" ></script>
+	<script type="text/javascript" src="../lib/seqdiag.js" ></script>
 </head>
 <body style="background-color: #999999;">
 	<script type="text/x-seqdiag" id="seqdiag-text">
@@ -22,113 +23,20 @@
 	<div id="seqdiag"></div>
 
 	<script type="text/javascript">
-		var svgns = "http://www.w3.org/2000/svg";
-		function drawNode(svg, stmt, x)
-		{
-			var rect = document.createElementNS(svgns, "rect");
-			rect.setAttribute("id", "rect-" + stmt[1].id);
-			rect.setAttribute("x", x);
-			rect.setAttribute("width", 200);
-			rect.setAttribute("y", 20);
-			rect.setAttribute("height", 50);
-			rect.setAttribute("fill", "#ffffff");
-			rect.setAttribute("stroke", "#000000");
-			var textbox = document.createElementNS(svgns, "text");
-			textbox.setAttribute("id", "textbox-" + stmt[1].id);
-			textbox.setAttribute("x", x + 100);
-			textbox.setAttribute("y", 50);
-			textbox.textContent = stmt[1].id;
-
-			svg.appendChild(rect);
-			svg.appendChild(textbox);
-			return [rect, textbox];
-		}
-
-		function drawEdge(svg, stmt, y)
-		{
-			var path = document.createElementNS(svgns, "path");
-			var left = svg.getElementById('rect-' + stmt[2]);
-			var right = svg.getElementById('rect-' + stmt[3]);
-			var lx = parseInt(left.getAttribute('x')) + ( parseInt(left.getAttribute('width')) / 2.0 );
-			var rx = parseInt(right.getAttribute('x')) + ( parseInt(right.getAttribute('width')) / 2.0 );
-			path.setAttribute("d", "M  " + lx + " " + y + " L " + rx + " " + y);
-			path.setAttribute("stroke", "#000000");
-			switch ( stmt[1] ) {
-				case "dotted":
-					path.setAttribute("stroke-dasharray", 5);
-					break;
-
-				default:
-					break;
-			}
-
-			var polygon = document.createElementNS(svgns, "polygon");
-			polygon.setAttribute("stroke", "#000000");
-			if ( lx < rx ) {
-				polygon.setAttribute("points", [[rx - 5, y - 5], [rx - 5, y + 5], [rx, y]].map (function(item) { return item.join(",") }).join(" "));
-			} else {
-				polygon.setAttribute("points", [[rx + 5, y - 5], [rx + 5, y + 5], [rx, y]].map (function(item) { return item.join(",") }).join(" "));
-			}
-
-			console.log(stmt);
-			if ( stmt[4] ) {
-				var attr = stmt[4];
-				console.log(attr);
-				if ( attr[1]["label"] ) {
-					var textbox = document.createElementNS(svgns, "text");
-					textbox.textContent = attr[1]["label"];
-					textbox.setAttribute("stroke", "#000000");
-					textbox.setAttribute("x", lx + 5 );
-					textbox.setAttribute("y", y - 5);
-					svg.appendChild(textbox);
-				}
-			}
-
-			svg.appendChild(path);
-			svg.appendChild(polygon);
-			return path;
-		}
 		window.onload = function() {
 			var target = document.getElementById('seqdiag-text');
 			var inplace = document.getElementById('seqdiag');
 
 			var AST = SeqdiagParser.parse(target.innerText);
-
+			var diagram = Seqdiag.DiagramBuilder.build(AST);
+			var svgns = "http://www.w3.org/2000/svg";
 			var svg = document.createElementNS(svgns, "svg");
+			var drawer = new Seqdiag.Drawer.SVG(diagram, svg, document);
+			drawer.draw();
+
 			var desc = document.createElementNS(svgns, "desc");
 			desc.textContent = target.innerText;
 			svg.appendChild(desc);
-			// svg.setAttribute("width", 600);
-			// svg.setAttribute("hegith", 600);
-			var start_x = 0;
-			var start_y = 100;
-			var nodes = [];
-			for (var i=0; i < AST[1].stmt.length; i++ ) {
-				var stmt = AST[1].stmt[i];
-				switch (stmt[0]) {
-					case "node":
-						nodes.push(stmt[1].id);
-						drawNode(svg, stmt, start_x);
-						start_x += 200 + 50;
-						break;
-					case "edge":
-						drawEdge(svg, stmt, start_y);
-						start_y += 100;
-						break;
-					default:
-						break;
-				}
-			}
-			for ( var j = 0; j < nodes.length; j++ ) {
-				var id = nodes[j];
-				var target = svg.getElementById('rect-' + id);
-				var path = document.createElementNS(svgns, "path");
-				var x = parseInt(target.getAttribute("x")) + parseInt(target.getAttribute("width")) / 2.0;
-				path.setAttribute("d", "M " + x + " " + 70 + " L " + x + " " + start_y);
-				path.setAttribute("stroke", "#000000");
-				path.setAttribute("stroke-dasharray", 5);
-				svg.appendChild(path);
-			}
 			var figure = document.createElement("figure");
 			figure.appendChild(svg);
 			inplace.appendChild(figure);
