@@ -59,6 +59,5 @@ require('./test_helper.js');
         q.equal(ast[1]["stmt"][4][4], null, "edge has not attributes ");
     });
 
-    q.start();
 })();
 
