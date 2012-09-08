@@ -7,39 +7,56 @@
 	<script type="text/javascript" src="../lib/seqdiag.js" ></script>
 </head>
 <body style="background-color: #999999;">
-	<script type="text/x-seqdiag" id="seqdiag-text">
-		seqdiag {
-			A;
-			B;
-			C;
+	<h1>Try Seqdiag.js</h1>
+	<div class="form">
+		<div><textarea id="seqdiag-text" style="width: 500px; height: 200px;">
+seqdiag {
+	A;
+	B;
+	C;
 
-			A -> B [label =  "start session(A to B)"];
-			B -> C [label = "B to C"];
-			C --> B [label = "C to B"];
-			B --> A [label = " return to A"];
-		}
-	</script>
+	A -&gt; B [label =  "start session(A to B)"];
+	B -&gt; C [label = "B to C"];
+	C --&gt; B [label = "C to B"];
+	B --&gt; A [label = " return to A"];
+}
+		</textarea></div>
+		<input id="submit-preview" type="submit" value="preview">
+	</div>
 
-	<div id="seqdiag"></div>
+	<figure>
+		<h1>Preview</h1>
+		<div id="seqdiag"></div>
+	</figure>
 
 	<script type="text/javascript">
 		window.onload = function() {
-			var target = document.getElementById('seqdiag-text');
-			var inplace = document.getElementById('seqdiag');
+			var previewButton = document.getElementById("submit-preview");
+			var doPreview = function() {
+				var target = document.getElementById('seqdiag-text');
+				var inplace = document.getElementById('seqdiag');
 
-			var AST = SeqdiagParser.parse(target.innerText);
-			var diagram = Seqdiag.DiagramBuilder.build(AST);
-			var svgns = "http://www.w3.org/2000/svg";
-			var svg = document.createElementNS(svgns, "svg");
-			var drawer = new Seqdiag.Drawer.SVG(diagram, svg, document);
-			drawer.draw();
+				var AST = SeqdiagParser.parse(target.value);
+				var diagram = Seqdiag.DiagramBuilder.build(AST);
+				var svgns = "http://www.w3.org/2000/svg";
+				var svg = document.createElementNS(svgns, "svg");
+				svg.setAttribute("width", "1024");
+				svg.setAttribute("height", "600");
+				var drawer = new Seqdiag.Drawer.SVG(diagram, svg, document);
+				drawer.draw();
 
-			var desc = document.createElementNS(svgns, "desc");
-			desc.textContent = target.innerText;
-			svg.appendChild(desc);
-			var figure = document.createElement("figure");
-			figure.appendChild(svg);
-			inplace.appendChild(figure);
+				var desc = document.createElementNS(svgns, "desc");
+				desc.textContent = target.innerText;
+				svg.appendChild(desc);
+				var figure = document.createElement("figure");
+				figure.appendChild(svg);
+				inplace.innerHTML = "";
+				inplace.appendChild(figure);
+			};
+			previewButton.onclick = function() {
+				doPreview();
+			}
+			doPreview();
 		};
 	</script>
 </body>
