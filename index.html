@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="javascripts/respond.js"></script>
+	<script src="javascripts/seqdiag/parser.js"></script>
+	<script src="javascripts/seqdiag.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -78,6 +80,31 @@
 &lt;/html&gt;
 </code></pre>
 
+<section>
+	<h2>Try Seqdiag.js</h2>
+
+	<div class="form">
+		<div><textarea id="seqdiag-preview" style="width: 600px; height: 300px;">
+seqdiag {
+	A;
+	B;
+	C;
+
+	A -&gt; B [label =  "start session(A to B)"];
+	B -&gt; C [label = "B to C"];
+	C --&gt; B [label = "C to B"];
+	B --&gt; A [label = " return to A"];
+}
+</textarea></div>
+		<input id="submit-preview" type="submit" value="preview">
+	</div>
+</section>
+
+<section>
+	<h2>Preview</h2>
+	<div id="seqdiag"></div>
+</section>
+
 <h2>SEE ALSO</h2>
 
 <ul>
@@ -90,5 +117,36 @@
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
     
+	<script type="text/javascript">
+		window.onload = function() {
+			var previewButton = document.getElementById("submit-preview");
+			var doPreview = function() {
+				var target = document.getElementById('seqdiag-preview');
+				var inplace = document.getElementById('seqdiag');
+
+				var AST = SeqdiagParser.parse(target.value);
+				var diagram = Seqdiag.DiagramBuilder.build(AST);
+				var svgns = "http://www.w3.org/2000/svg";
+				var svg = document.createElementNS(svgns, "svg");
+				svg.setAttribute("width", "800");
+				svg.setAttribute("height", "400");
+				svg.setAttribute("style", "background-color: #cceeff; color: #333333");
+				var drawer = new Seqdiag.Drawer.SVG(diagram, svg, document);
+				drawer.draw();
+
+				var desc = document.createElementNS(svgns, "desc");
+				desc.textContent = target.innerText;
+				svg.appendChild(desc);
+				var figure = document.createElement("figure");
+				figure.appendChild(svg);
+				inplace.innerHTML = "";
+				inplace.appendChild(figure);
+			};
+			previewButton.onclick = function() {
+				doPreview();
+			}
+			doPreview();
+		};
+	</script>
   </body>
 </html>
