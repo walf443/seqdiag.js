@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Seqdiag.js by walf443</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/walf443/seqdiag.js">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/walf443/seqdiag.js/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/walf443/seqdiag.js/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Seqdiag.js</h1>
+          <p>seqdiag on browser.</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/walf443">walf443</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h2>Seqdiag.js</h2>
+
+<p>sequence diagram on javascript from simple text format.</p>
+
+<h2>Example</h2>
+
+<pre><code>&lt;!doctype html&gt;
+&lt;head&gt;
+    &lt;script type="text/javascript" src="../lib/seqdiag/parser.js" &gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="../lib/seqdiag.js" &gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;figure id="diag"&gt;&lt;/figure&gt;
+    &lt;script type="text/x-seqdiag" id="seqdiag-text"&gt;
+        seqdiag {
+            A [label = "webapp"];
+            B [label = "DB"];
+
+            A -&gt; B[label = "sql"];
+            B -&gt; A [label = "result"];
+        };
+    &lt;/script&gt;
+    &lt;script type="text/javascript"&gt;
+        window.onload = function() {
+            var taget = document.getElementById('seqdiag-text');
+            var ast = SeqdiagParser.parse(target.innerText);
+            var diagram = Seqdiag.Builder.build(ast);
+            var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svg.setAttribute("width", "1024");
+            svg.setAttribute("width", "600");
+            var drawer = new Seqdiag.Drawer.SVG(diagram, svg, document);
+            drawer.draw();
+            var figure = document.getElementById('diag');
+            figure.appendChild(svg);
+        };
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<h2>SEE ALSO</h2>
+
+<ul>
+<li>examples/try.html</li>
+<li>seqdiag - <a href="http://blockdiag.com/en/seqdiag/">http://blockdiag.com/en/seqdiag/</a>
+</li>
+</ul>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
