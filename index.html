@@ -9,7 +9,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="javascripts/respond.js"></script>
 	<script src="javascripts/seqdiag/parser.js"></script>
-	<script src="javascripts/seqdiag.js"></script>
+	<script src="javascripts/seqdiag.js?v0.0.2"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -46,6 +46,20 @@
 
 <h2>Example</h2>
 
+<div>
+	<script type="text/x-seqdiag" class="seqdiag" data-target-id="figure1">
+			seqdiag {
+				A[label = "webapp"];
+				B[label = "DB"];
+
+				A -> B[label = "sql"];
+				B -> A [label = "result"];
+			}
+	</script>
+
+	<figure id="figure1"></figure>
+</div>
+
 <pre><code>&lt;!doctype html&gt;
 &lt;head&gt;
     &lt;script type="text/javascript" src="../lib/seqdiag/parser.js" &gt;&lt;/script&gt;
@@ -60,7 +74,7 @@
 
             A -&gt; B[label = "sql"];
             B -&gt; A [label = "result"];
-        };
+        }
     &lt;/script&gt;
     &lt;script type="text/javascript"&gt;
         window.onload = function() {
@@ -119,6 +133,21 @@ seqdiag {
     
 	<script type="text/javascript">
 		window.onload = function() {
+			$('.seqdiag').each(function() {
+				var target = $(this);
+				var ast = SeqdiagParser.parse(target.text());
+				var diagram = Seqdiag.DiagramBuilder.build(ast);
+				var svgns = "http://www.w3.org/2000/svg";
+				var svg = document.createElementNS(svgns, "svg");
+				svg.setAttribute("width", "500");
+				svg.setAttribute("height", "250");
+				svg.setAttribute("style", "background-color: #cceeff; color: #333333");
+				var drawer = new Seqdiag.Drawer.SVG(diagram, svg, document);
+				drawer.draw();
+				var target_id = target.data('target-id');
+				console.log(svg);
+				$('#' + target_id).html(svg);
+			});
 			var previewButton = document.getElementById("submit-preview");
 			var doPreview = function() {
 				var target = document.getElementById('seqdiag-preview');
