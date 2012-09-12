@@ -99,7 +99,13 @@
         buildEdge: function(diagram, attribute) {
             var from = diagram.getNodeById(attribute[2]);
             var to   = diagram.getNodeById(attribute[3]);
-            var edge = new Edge(from, to, attribute[4][1]);
+            var attrs = attribute[4];
+            if ( attrs ) {
+                attrs = attrs[1];
+            } else {
+                attrs = null;
+            }
+            var edge = new Edge(from, to, attrs);
             return edge;
         }
     };
@@ -131,9 +137,9 @@
 
     Drawer.SVG.prototype.drawNodes = function() {
         var nodes = this.diagram.nodes();
-        var x = 0;
-        var y = 10;
         var metrics = this.calcNodeMetrics();
+        var x = metrics["widthMargin"];
+        var y = 10;
         for (var i = 0; i < nodes.length; i++ ) {
             this.drawNode(nodes[i], {
                 "x": x,
@@ -150,7 +156,9 @@
         var svgHeight = parseInt(this.svg.getAttribute("height")) || 600;
         var widthMargin = 50;
         var heightMargin = 50;
-        var nodeWidth = ( svgWidth / this.diagram.nodes().length ) - widthMargin;
+        // svgWidth = ( nodeWidth * length ) + ( widthMargin * ( length + 1 ) )
+        var nodeLength = this.diagram.nodes().length;
+        var nodeWidth = ( ( svgWidth - widthMargin * ( nodeLength + 1 ) ) / nodeLength );
         var nodeHeight = ( svgHeight / ( this.diagram.edges.length + 1 ) ) - heightMargin;
         return {
             "width": nodeWidth,
@@ -160,6 +168,20 @@
         }
     };
 
+    Drawer.SVG.prototype.defaultBackgroundColor = "#ffffff";
+    Drawer.SVG.prototype.defaultStrokeColor = "#000000";
+
+    Drawer.SVG.prototype.getNodeFillColor = function(node) {
+        return Drawer.SVG.prototype.defaultBackgroundColor;
+    };
+
+    Drawer.SVG.prototype.getNodeStrokeColor = function(node) {
+        return Drawer.SVG.prototype.defaultStrokeColor;
+    };
+
+    Drawer.SVG.prototype.charWidth = 8;
+    Drawer.SVG.prototype.charHeight = 8;
+
     Drawer.SVG.prototype.drawNode = function(node, params) {
         var rect = this.createSVGElement('rect');
         rect.setAttribute("id", "node-rect-" + node.id);
@@ -168,8 +190,8 @@
         rect.setAttribute("height", params["height"]);
         rect.setAttribute("x", params["x"]);
         rect.setAttribute("y", params["y"]);
-        rect.setAttribute("fill", "#ffffff");
-        rect.setAttribute("stroke", "#000000");
+        rect.setAttribute("fill", this.getNodeFillColor(node));
+        rect.setAttribute("stroke", this.getNodeStrokeColor(node));
 
         this.svg.appendChild(rect);
 
@@ -181,8 +203,8 @@
         }
         textbox.setAttribute("id", "node-textbox-" + node.id);
         textbox.setAttribute("class", "node-text");
-        textbox.setAttribute("x", params["x"] + params["width"] / 2.0);
-        textbox.setAttribute("y", params["y"] + params["height"] / 2.0);
+        textbox.setAttribute("x", params["x"] + params["width"] / 2.0 - textbox.textContent.length * this.charWidth / 2.0);
+        textbox.setAttribute("y", params["y"] + params["height"] / 2.0 + ( this.charHeight / 2.0 ));
 
         this.svg.appendChild(textbox);
     };
@@ -198,6 +220,10 @@
         }
     };
 
+    Drawer.SVG.prototype.getEdgeStrokeColor = function(edge) {
+        return this.defaultStrokeColor;
+    };
+
     Drawer.SVG.prototype.drawEdge = function(edge, params) {
         var path = this.createSVGElement("path");
         var from = this.getNodeRect(edge.from.id);
@@ -207,10 +233,10 @@
         var fromX   = parseInt(from.getAttribute("x")) + parseInt(from.getAttribute("width")) / 2.0;
         var toX     =   parseInt(to.getAttribute("x")) + parseInt(to.getAttribute("width")) / 2.0;
         path.setAttribute("d", "M " + fromX + " " + y + " L " + toX + " " + y);
-        path.setAttribute("stroke", "#000000");
+        path.setAttribute("stroke", this.getEdgeStrokeColor(edge));
 
         var arrowHead = this.createSVGElement("polygon");
-        arrowHead.setAttribute("stroke", "#000000");
+        arrowHead.setAttribute("stroke", this.getEdgeStrokeColor(edge));
         var arrowWidth = 5;
         var arrowHeight = 10;
         var arrowFromX = null;
