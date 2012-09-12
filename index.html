@@ -172,7 +172,11 @@ seqdiag {
 				inplace.appendChild(figure);
 			};
 			previewButton.onclick = function() {
-				doPreview();
+				try {
+					doPreview();
+				} catch (e) {
+					alert(e);
+				}
 			}
 			doPreview();
 		};
