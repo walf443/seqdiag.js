@@ -44,3 +44,10 @@ SEE ALSO
  * examples/try.html
  * seqdiag - http://blockdiag.com/en/seqdiag/
 
+LICENSE
+----------------
+(c) 2012 Keiji Yoshimi
+
+This project is released under MIT license.
+See followings: http://www.opensource.org/licenses/MIT
+
