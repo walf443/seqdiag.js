@@ -1,25 +1,38 @@
+
+/* SYNOPSIS
+//
+//      var Seqdiag = require('seqdiag');
+//      var diagram = new Seqdiag.Diagram();
+//      var nodeA = new Seqdiag.Node("A");
+//      diagram.addNode(nodeA);
+//      var nodeB = new Seqdiag.Node("B");
+//      diagram.addNode(nodeB);
+//      var edgeAB = new Seqdiag.Edge(nodeA, nodeB);
+//      diagram.addEdge(edgeAB);
+//
+//  If you load it from browser, Seqdiag namespace is exported.
+//
+// @license
+// (c) 2012 Keiji Yoshimi
+// This project is released under MIT license.
+// See followings: http://www.opensource.org/licenses/MIT
+*/
 (function(exports)
 {
     "use strict";
 
-    /* SYNOPSIS
+    // -----------------------------------------------------------------------------------------
+    // @class Node
     //
-    //      var Seqdiag = require('seqdiag');
-    //      var diagram = new Seqdiag.Diagram();
-    //      var nodeA = new Seqdiag.Node("A");
-    //      diagram.addNode(nodeA);
-    //      var nodeB = new Seqdiag.Node("B");
-    //      diagram.addNode(nodeB);
-    //      var edgeAB = new Seqdiag.Edge(nodeA, nodeB);
-    //      diagram.addEdge(edgeAB);
-    */
-
     var Node = function(id, attributes) {
         this.id = id;
         this.attributes = attributes;
         return this;
     };
 
+    // -----------------------------------------------------------------------------------------
+    // @class Edge
+    //
     var Edge = function(from, to, attributes) {
         this.from = from;
         this.to   = to;
@@ -27,6 +40,9 @@
         return this;
     };
 
+    // -----------------------------------------------------------------------------------------
+    // @class Diagram
+    //
     var Diagram = function() {
 
         this.nodeIds = [];
@@ -56,7 +72,10 @@
         this["edges"].push(edge);
     };
 
+    // -----------------------------------------------------------------------------------------
     /*
+     *  @class DiagramBuilder
+     *
      *  build up Diagram object from parsed tokens.
      *
      *  SYNOPSIS:
@@ -110,6 +129,9 @@
         }
     };
 
+    // -----------------------------------------------------------------------------------------
+    // @class Drawer.SVG
+    //
     var Drawer = {
         SVG: function(diagram, svg, document) {
             this.diagram = diagram;
@@ -151,11 +173,16 @@
         }
     };
 
+    Drawer.SVG.prototype.defaultDiagramWidth = 1024;
+    Drawer.SVG.prototype.defaultDiagramHeight = 600;
+    Drawer.SVG.prototype.defaultWidthMargin = 50;
+    Drawer.SVG.prototype.defaultHeightMargin = 50;
+
     Drawer.SVG.prototype.calcNodeMetrics = function() {
-        var svgWidth = parseInt(this.svg.getAttribute("width")) || 1024;
-        var svgHeight = parseInt(this.svg.getAttribute("height")) || 600;
-        var widthMargin = 50;
-        var heightMargin = 50;
+        var svgWidth = parseInt(this.svg.getAttribute("width")) || this.defaultDiagramWidth;
+        var svgHeight = parseInt(this.svg.getAttribute("height")) || this.defaultDiagramHeight;
+        var widthMargin = this.defaultWidthMargin;
+        var heightMargin = this.defaultHeightMargin;
         // svgWidth = ( nodeWidth * length ) + ( widthMargin * ( length + 1 ) )
         var nodeLength = this.diagram.nodes().length;
         var nodeWidth = ( ( svgWidth - widthMargin * ( nodeLength + 1 ) ) / nodeLength );
@@ -282,12 +309,13 @@
         var rectBottomY = parseInt(rect.getAttribute("y")) + parseInt(rect.getAttribute("height"));
 
         var line = this.createSVGElement('path');
-        line.setAttribute("d", "M " + rectCenterX + " " + rectBottomY + "L " + rectCenterX + " 500");
+        line.setAttribute("d", "M " + rectCenterX + " " + rectBottomY + "L " + rectCenterX + " " + this.defaultDiagramHeight);
         line.setAttribute("stroke", "#000000");
         line.setAttribute("stroke-dasharray", 5);
         this.svg.appendChild(line);
     };
 
+    // -----------------------------------------------------------------------------------------
     // declare exports followings:
     exports.Node = Node;
     exports.Edge = Edge;
