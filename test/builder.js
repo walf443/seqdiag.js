@@ -20,6 +20,11 @@ require('./test_helper.js');
         q.equal(diagram.nodes().length, 3, "diagram should have 3 nodes");
         q.equal(diagram.edges.length, 2, "diagram should have 2 edge");
 
+        var edgeAB = diagram.edges[0];
+        q.equal(edgeAB.attributes["type"], "normal", "edge type OK");
+        var edgeBA = diagram.edges[1];
+        q.equal(edgeBA.attributes["type"], "dotted", "edge type OK");
+
     });
 
     q.test("without defining node case.", function() {
