@@ -102,5 +102,50 @@ require('./test_helper.js');
 
     });
 
+    q.test('edge types', function() {
+        var ast = Seqdiag.Parser.parse("seqdiag {\n" + 
+            "A -> B;" +
+            "B --> C;" +
+            "B <-- C;" +
+            "A <- B;" +
+            "A ->> B;" +
+            "B -->> C;" +
+            "B <<-- C;" +
+            "A <<- B;" +
+        "}");
+
+        q.ok(ast instanceof Array, "should return tuple");
+        q.equal(ast[0], "graph", "token should be graph");
+
+        q.ok(ast[1] instanceof Object, "graph has token attribute");
+        q.equal(ast[1]["id"], "seqdiag", "graph attribute should have 'id'");
+
+        q.ok(ast[1]["stmt"] instanceof Array, "graph attribute should have stmt");
+
+        // for node under_score
+        q.equal(ast[1]["stmt"][0][0], "edge", "statement should be edge");
+        q.equal(ast[1]["stmt"][0][1] , "normal", "edge type should be normal");
+
+        q.equal(ast[1]["stmt"][1][0], "edge", "statement should be edge");
+        q.equal(ast[1]["stmt"][1][1] , "dotted", "edge type should be dotted");
+
+        q.equal(ast[1]["stmt"][2][0], "edge", "statement should be edge");
+        q.equal(ast[1]["stmt"][2][1] , "return_dotted", "edge type should be dotted");
+
+        q.equal(ast[1]["stmt"][3][0], "edge", "statement should be edge");
+        q.equal(ast[1]["stmt"][3][1] , "return", "edge type should be dotted");
+
+        q.equal(ast[1]["stmt"][4][0], "edge", "statement should be edge");
+        q.equal(ast[1]["stmt"][4][1] , "asynchronous", "edge type should be dotted");
+
+        q.equal(ast[1]["stmt"][5][0], "edge", "statement should be edge");
+        q.equal(ast[1]["stmt"][5][1] , "asynchronous_dotted", "edge type should be dotted");
+
+        q.equal(ast[1]["stmt"][6][0], "edge", "statement should be edge");
+        q.equal(ast[1]["stmt"][6][1] , "return_asynchronous_dotted", "edge type should be dotted");
+
+        q.equal(ast[1]["stmt"][7][0], "edge", "statement should be edge");
+        q.equal(ast[1]["stmt"][7][1] , "return_asynchronous", "edge type should be dotted");
+    });
 })();
 
