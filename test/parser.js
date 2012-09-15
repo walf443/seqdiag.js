@@ -136,16 +136,16 @@ require('./test_helper.js');
         q.equal(ast[1]["stmt"][3][1] , "return", "edge type should be dotted");
 
         q.equal(ast[1]["stmt"][4][0], "edge", "statement should be edge");
-        q.equal(ast[1]["stmt"][4][1] , "asynchronous", "edge type should be dotted");
+        q.equal(ast[1]["stmt"][4][1] , "async", "edge type should be dotted");
 
         q.equal(ast[1]["stmt"][5][0], "edge", "statement should be edge");
-        q.equal(ast[1]["stmt"][5][1] , "asynchronous_dotted", "edge type should be dotted");
+        q.equal(ast[1]["stmt"][5][1] , "async_dotted", "edge type should be dotted");
 
         q.equal(ast[1]["stmt"][6][0], "edge", "statement should be edge");
-        q.equal(ast[1]["stmt"][6][1] , "return_asynchronous_dotted", "edge type should be dotted");
+        q.equal(ast[1]["stmt"][6][1] , "return_async_dotted", "edge type should be dotted");
 
         q.equal(ast[1]["stmt"][7][0], "edge", "statement should be edge");
-        q.equal(ast[1]["stmt"][7][1] , "return_asynchronous", "edge type should be dotted");
+        q.equal(ast[1]["stmt"][7][1] , "return_async", "edge type should be dotted");
     });
 })();
 
