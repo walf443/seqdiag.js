@@ -81,5 +81,26 @@ require('./test_helper.js');
         q.equal(ast[1]["stmt"][0][1]["id"], "under_score", "node id should be under_score");
 
     });
+
+    q.test('comment statement', function() {
+        var ast = Seqdiag.Parser.parse("seqdiag {\n" + 
+            "// this is comment.\n" +
+            "under_score;\n" +
+        "}");
+
+        q.ok(ast instanceof Array, "should return tuple");
+        q.equal(ast[0], "graph", "token should be graph");
+
+        q.ok(ast[1] instanceof Object, "graph has token attribute");
+        q.equal(ast[1]["id"], "seqdiag", "graph attribute should have 'id'");
+
+        q.ok(ast[1]["stmt"] instanceof Array, "graph attribute should have stmt");
+
+        // for node under_score
+        q.equal(ast[1]["stmt"][0][0], "comment", "first statement should be comment");
+        q.equal(ast[1]["stmt"][0][1] , "this is comment.", "comment OK");
+
+    });
+
 })();
 
