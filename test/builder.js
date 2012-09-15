@@ -3,7 +3,10 @@ require('./test_helper.js');
     "use strict";
 
     var q = QUnit;
-    q.test("DiagramBuilder", function() {
+    q.module("DiagramBuilder", {
+    });
+
+    q.test("normal case", function() {
         var ast = Seqdiag.Parser.parse("seqdiag {\n" + 
             "A[label = \"aaa\", foo = \"bar\"];\n" +
             "B[label = \"あいうえお\"];\n" +
@@ -19,4 +22,16 @@ require('./test_helper.js');
 
     });
 
+    q.test("without defining node case.", function() {
+        var ast = Seqdiag.Parser.parse("seqdiag {\n" + 
+            "A -> B [ label = \"A to B\" ];" +
+            "B --> A;" +
+        "}");
+
+        var diagram = Seqdiag.DiagramBuilder.build(ast);
+        q.ok(diagram instanceof Seqdiag.Diagram, "instance OK");
+        q.equal(diagram.nodes().length, 2, "diagram should have 2 nodes");
+        q.equal(diagram.edges.length, 2, "diagram should have 2 edge");
+
+    });
 })();
