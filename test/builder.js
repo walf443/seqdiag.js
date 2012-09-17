@@ -66,12 +66,12 @@ require('./test_helper.js');
         q.equal(diagram.edges[1].attributes["isDotted"], true, "isDotted OK");
         q.equal(diagram.edges[1].attributes["isAsync"],  false, "isAsync OK");
 
-        q.equal(diagram.edges[2].attributes["type"], "dotted", "return_dotted OK");
+        q.equal(diagram.edges[2].attributes["type"], "return_dotted", "return_dotted OK");
         q.equal(diagram.edges[2].attributes["isReturn"], true, "isReturn OK");
         q.equal(diagram.edges[2].attributes["isDotted"], true, "isDotted OK");
         q.equal(diagram.edges[2].attributes["isAsync"],  false, "isAsync OK");
 
-        q.equal(diagram.edges[3].attributes["type"], "normal", "return OK");
+        q.equal(diagram.edges[3].attributes["type"], "return", "return OK");
         q.equal(diagram.edges[3].attributes["isReturn"], true, "isReturn OK");
         q.equal(diagram.edges[3].attributes["isDotted"], false, "isDotted OK");
         q.equal(diagram.edges[3].attributes["isAsync"],  false, "isAsync OK");
@@ -86,12 +86,12 @@ require('./test_helper.js');
         q.equal(diagram.edges[5].attributes["isDotted"], true, "isDotted OK");
         q.equal(diagram.edges[5].attributes["isAsync"],  true, "isAsync OK");
 
-        q.equal(diagram.edges[6].attributes["type"], "async_dotted", "return_async_dotted OK");
+        q.equal(diagram.edges[6].attributes["type"], "return_async_dotted", "return_async_dotted OK");
         q.equal(diagram.edges[6].attributes["isReturn"], true, "isReturn OK");
         q.equal(diagram.edges[6].attributes["isDotted"], true, "isDotted OK");
         q.equal(diagram.edges[6].attributes["isAsync"],  true, "isAsync OK");
 
-        q.equal(diagram.edges[7].attributes["type"], "async", "return_async OK");
+        q.equal(diagram.edges[7].attributes["type"], "return_async", "return_async OK");
         q.equal(diagram.edges[7].attributes["isReturn"], true, "isReturn OK");
         q.equal(diagram.edges[7].attributes["isDotted"], false, "isDotted OK");
         q.equal(diagram.edges[7].attributes["isAsync"],  true, "isAsync OK");
