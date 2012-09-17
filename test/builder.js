@@ -39,4 +39,62 @@ require('./test_helper.js');
         q.equal(diagram.edges.length, 2, "diagram should have 2 edge");
 
     });
+
+    q.test('edge types', function() {
+        var ast = Seqdiag.Parser.parse("seqdiag {\n" + 
+            "A -> B;" +
+            "B --> C;" +
+            "B <-- C;" +
+            "A <- B;" +
+            "A ->> B;" +
+            "B -->> C;" +
+            "B <<-- C;" +
+            "A <<- B;" +
+        "}");
+
+        var diagram = Seqdiag.DiagramBuilder.build(ast);
+        q.ok(diagram instanceof Seqdiag.Diagram, "diagram OK");
+        q.equal(diagram.edges.length, 8);
+
+        q.equal(diagram.edges[0].attributes["type"], "normal", "normal OK");
+        q.equal(diagram.edges[0].attributes["isReturn"], false, "isReturn OK");
+        q.equal(diagram.edges[0].attributes["isDotted"], false, "isDotted OK");
+        q.equal(diagram.edges[0].attributes["isAsync"],  false, "isAsync OK");
+
+        q.equal(diagram.edges[1].attributes["type"], "dotted", "dotted OK");
+        q.equal(diagram.edges[1].attributes["isReturn"], false, "isReturn OK");
+        q.equal(diagram.edges[1].attributes["isDotted"], true, "isDotted OK");
+        q.equal(diagram.edges[1].attributes["isAsync"],  false, "isAsync OK");
+
+        q.equal(diagram.edges[2].attributes["type"], "dotted", "return_dotted OK");
+        q.equal(diagram.edges[2].attributes["isReturn"], true, "isReturn OK");
+        q.equal(diagram.edges[2].attributes["isDotted"], true, "isDotted OK");
+        q.equal(diagram.edges[2].attributes["isAsync"],  false, "isAsync OK");
+
+        q.equal(diagram.edges[3].attributes["type"], "normal", "return OK");
+        q.equal(diagram.edges[3].attributes["isReturn"], true, "isReturn OK");
+        q.equal(diagram.edges[3].attributes["isDotted"], false, "isDotted OK");
+        q.equal(diagram.edges[3].attributes["isAsync"],  false, "isAsync OK");
+
+        q.equal(diagram.edges[4].attributes["type"], "async", "async OK");
+        q.equal(diagram.edges[4].attributes["isReturn"], false, "isReturn OK");
+        q.equal(diagram.edges[4].attributes["isDotted"], false, "isDotted OK");
+        q.equal(diagram.edges[4].attributes["isAsync"],  true, "isAsync OK");
+
+        q.equal(diagram.edges[5].attributes["type"], "async_dotted", "async_dotted OK");
+        q.equal(diagram.edges[5].attributes["isReturn"], false, "isReturn OK");
+        q.equal(diagram.edges[5].attributes["isDotted"], true, "isDotted OK");
+        q.equal(diagram.edges[5].attributes["isAsync"],  true, "isAsync OK");
+
+        q.equal(diagram.edges[6].attributes["type"], "async_dotted", "return_async_dotted OK");
+        q.equal(diagram.edges[6].attributes["isReturn"], true, "isReturn OK");
+        q.equal(diagram.edges[6].attributes["isDotted"], true, "isDotted OK");
+        q.equal(diagram.edges[6].attributes["isAsync"],  true, "isAsync OK");
+
+        q.equal(diagram.edges[7].attributes["type"], "async", "return_async OK");
+        q.equal(diagram.edges[7].attributes["isReturn"], true, "isReturn OK");
+        q.equal(diagram.edges[7].attributes["isDotted"], false, "isDotted OK");
+        q.equal(diagram.edges[7].attributes["isAsync"],  true, "isAsync OK");
+
+    });
 })();
