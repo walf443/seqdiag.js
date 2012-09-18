@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Seqdiag.js - drawing sequence diagram on browser - </title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+	<script src="javascripts/seqdiag/parser.js"></script>
+	<script src="javascripts/seqdiag.js?v0.0.2"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/walf443/seqdiag.js">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/walf443/seqdiag.js/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/walf443/seqdiag.js/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+		  <h1><a href="./index.html">Seqdiag.js</a></h1>
+          <p>drawing sequence diagram on browser</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/walf443">walf443</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
+		<article>
+			<section>
+				<h2>Edge Types</h2>
+				<script type="text/x-seqdiag" class="seqdiag" data-target-id="figure-edge-types">
+seqdiag {
+  // normal edge and doted edge
+  A -> B [label = "normal edge"];
+  B --> C [label = "dotted edge"];
+
+  B <-- C [label = "return dotted edge"];
+  A <- B [label = "return edge"];
+
+  // asynchronus edge
+  A ->> B [label = "asynchronus edge"];
+  B -->> C [label = "asynchronus dotted edge"];
+
+  B <<-- C [label = "return asynchronus doted edge"];
+  A <<- B [label = "return asynchronus edge"];
+
+  // self referenced edge
+  A -> A [label = "self reference edge"];
+}
+				</script>
+				<figure id="figure-edge-types"></figure>
+			</section>
+		</article>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+	<script type="text/javascript">
+		window.onload = function() {
+			$('.seqdiag').each(function() {
+				var target = $(this);
+				var ast = SeqdiagParser.parse(target.text());
+				var diagram = Seqdiag.DiagramBuilder.build(ast);
+				var svgns = "http://www.w3.org/2000/svg";
+				var svg = document.createElementNS(svgns, "svg");
+				svg.setAttribute("width", "600");
+				svg.setAttribute("height", "400");
+				svg.setAttribute("style", "background-color: #cceeff; color: #333333");
+				var drawer = new Seqdiag.Drawer.SVG(diagram, svg, document);
+				drawer.draw();
+				var target_id = target.data('target-id');
+				var source = document.createElement("pre");
+				source.textContent = target.text();
+				$('#' + target_id).html(source);
+				$('#' + target_id).append(svg);
+			});
+		};
+	</script>
+  </body>
+</html>

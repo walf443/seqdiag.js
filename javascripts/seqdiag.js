@@ -117,14 +117,49 @@
         },
         buildEdge: function(diagram, attribute) {
             var from = diagram.getNodeById(attribute[2]);
+            var type = attribute[1];
+            if ( ! from ) {
+                from = new Node(attribute[2]);
+                diagram.addNode(from);
+            }
             var to   = diagram.getNodeById(attribute[3]);
+            if ( ! to ) {
+                to = new Node(attribute[3]);
+                diagram.addNode(to);
+            }
             var attrs = attribute[4];
             if ( attrs ) {
                 attrs = attrs[1];
             } else {
-                attrs = null;
+                attrs = {};
             }
-            var edge = new Edge(from, to, attrs);
+
+            if ( from.id == to.id ) {
+                type = "self_reference";
+            }
+            attrs["type"] = type;
+            if ( type.indexOf("return") > -1 ) {
+                attrs["isReturn"] = true;
+            } else {
+                attrs["isReturn"] = false;
+            }
+            if ( type.indexOf("async") > -1 ) {
+                attrs["isAsync"] = true;
+            } else {
+                attrs["isAsync"] = false;
+            }
+            if ( type.indexOf("dotted") > -1 ) {
+                attrs["isDotted"] = true;
+            } else {
+                attrs["isDotted"] = false;
+            }
+
+            var edge;
+            if ( attrs["isReturn"] ) {
+                edge = new Edge(to, from, attrs);
+            } else {
+                edge = new Edge(from, to, attrs);
+            }
             return edge;
         }
     };
@@ -157,11 +192,13 @@
         this.drawLifeLines();
     };
 
+    Drawer.SVG.prototype.marginTop = 10;
+
     Drawer.SVG.prototype.drawNodes = function() {
         var nodes = this.diagram.nodes();
         var metrics = this.calcNodeMetrics();
         var x = metrics["widthMargin"];
-        var y = 10;
+        var y = this.marginTop;
         for (var i = 0; i < nodes.length; i++ ) {
             this.drawNode(nodes[i], {
                 "x": x,
@@ -176,7 +213,8 @@
     Drawer.SVG.prototype.defaultDiagramWidth = 1024;
     Drawer.SVG.prototype.defaultDiagramHeight = 600;
     Drawer.SVG.prototype.defaultWidthMargin = 50;
-    Drawer.SVG.prototype.defaultHeightMargin = 50;
+    Drawer.SVG.prototype.defaultHeightMargin = 30;
+    Drawer.SVG.prototype.nodeHeight = 30;
 
     Drawer.SVG.prototype.calcNodeMetrics = function() {
         var svgWidth = parseInt(this.svg.getAttribute("width")) || this.defaultDiagramWidth;
@@ -186,7 +224,7 @@
         // svgWidth = ( nodeWidth * length ) + ( widthMargin * ( length + 1 ) )
         var nodeLength = this.diagram.nodes().length;
         var nodeWidth = ( ( svgWidth - widthMargin * ( nodeLength + 1 ) ) / nodeLength );
-        var nodeHeight = ( svgHeight / ( this.diagram.edges.length + 1 ) ) - heightMargin;
+        var nodeHeight = this.nodeHeight;
         return {
             "width": nodeWidth,
             "widthMargin": widthMargin,
@@ -237,13 +275,23 @@
     };
 
     Drawer.SVG.prototype.drawEdges = function() {
-        var y = 100;
+        var y = this.marginTop + this.nodeHeight;
+        var svgHeight = parseInt(this.svg.getAttribute("height")) || this.defaultDiagramHeight;
+        var edgeMargin = ( svgHeight - y ) / ( this.diagram.edges.length + 1 );
+        y += edgeMargin;
         var edges = this.diagram.edges;
         for (var i = 0; i < edges.length; i++ ) {
-            this.drawEdge(edges[i], {
-                "y": y,
-            });
-            y += 50;
+            if ( edges[i].attributes["type"] == "self_reference" ) {
+                console.log("called!!");
+                this.drawSelfReferenceEdge(edges[i], {
+                    "y": y,
+                });
+            } else {
+                this.drawEdge(edges[i], {
+                    "y": y,
+                });
+            }
+            y += edgeMargin;
         }
     };
 
@@ -261,38 +309,139 @@
         var toX     =   parseInt(to.getAttribute("x")) + parseInt(to.getAttribute("width")) / 2.0;
         path.setAttribute("d", "M " + fromX + " " + y + " L " + toX + " " + y);
         path.setAttribute("stroke", this.getEdgeStrokeColor(edge));
+        if ( edge.attributes["isDotted"] ) {
+            path.setAttribute("stroke-dasharray", 5);
+        }
 
-        var arrowHead = this.createSVGElement("polygon");
-        arrowHead.setAttribute("stroke", this.getEdgeStrokeColor(edge));
-        var arrowWidth = 5;
-        var arrowHeight = 10;
+        this.drawEdgeArrowHead(edge, {
+            "fromX": fromX,
+            "toX"  : toX,
+            "y"    : y
+        });
+
+        this.svg.appendChild(path);
+
+        if ( edge.attributes && edge.attributes["label"] !== undefined ) {
+            this.drawEdgeText(edge, {
+                "fromX": fromX,
+                "toX"  : toX,
+                "y"    : y
+            });
+        }
+    };
+
+    Drawer.SVG.prototype.drawSelfReferenceEdge = function(edge, params)
+    {
+        var y = params["y"];
+
+        var target = this.getNodeRect(edge.from.id);
+        var nextNode = null;
+        var nodes = this.diagram.nodes();
+        for ( var i = 0; i < nodes.length; i++ ) {
+            if ( target.id == nodes[i].id ) {
+                nextNode = nodes[i+1];
+                break;
+            }
+        }
+        // for right node's self-reference.
+        if ( !nextNode ) {
+            nextNode = nodes[nodes.length-1-1];
+        }
+        var nextNodeRect = this.getNodeRect(nextNode.id);
+        var fromX   = parseInt(target.getAttribute("x")) + parseInt(target.getAttribute("width")) / 2.0;
+        var toX   = parseInt(nextNodeRect.getAttribute("x")) + parseInt(nextNodeRect.getAttribute("width")) / 2.0;
+        if ( fromX < toX ) {
+            toX = fromX + ( toX - fromX ) / 2;
+        } else {
+            toX = fromX + ( fromX - toX ) / 2;
+        }
+
+        var fromPath = this.createSVGElement("path");
+        fromPath.setAttribute("stroke", this.defaultStrokeColor);
+        fromPath.setAttribute("d", "M " + fromX + " " + y + " L " + toX + " " + y);
+        var toPath = this.createSVGElement("path");
+        var selfReferenceEdgeMargin = 15;
+        toPath.setAttribute("stroke", this.defaultStrokeColor);
+        toPath.setAttribute("d", "M " + toX + " " + ( y + selfReferenceEdgeMargin ) + " L " + fromX + " " + ( y + selfReferenceEdgeMargin ) );
+
+        var sidePath = this.createSVGElement("path");
+        sidePath.setAttribute("stroke", this.defaultStrokeColor);
+        sidePath.setAttribute("d", "M " + toX + " " + y + " L " + toX + " " + ( y + selfReferenceEdgeMargin ));
+
+        this.svg.appendChild(fromPath);
+        this.svg.appendChild(toPath);
+        this.svg.appendChild(sidePath);
+
+        this.drawEdgeArrowHead(edge, {
+            "fromX": toX,
+            "toX": fromX,
+            "y" : y + selfReferenceEdgeMargin
+        });
+
+        this.drawEdgeText(edge, {
+            "fromX": fromX,
+            "toX": toX,
+            "y" : y
+        });
+
+    };
+
+    Drawer.SVG.prototype.arrowWidth = 10;
+    Drawer.SVG.prototype.arrowHeight = 6;
+
+    Drawer.SVG.prototype.drawEdgeArrowHead = function(edge, options) {
+        var fromX = options["fromX"];
+        var toX   = options["toX"];
+        var y     = options["y"];
+
+        var arrowWidth = this.arrowWidth;
+        var arrowHeight = this.arrowHeight;
+
         var arrowFromX = null;
         if ( fromX < toX ) {
             arrowFromX = toX - arrowWidth;
         } else {
             arrowFromX = toX + arrowWidth;
         }
-        arrowHead.setAttribute("points", [
-            [arrowFromX, y - arrowHeight/2],
-            [arrowFromX, y + arrowHeight/2],
-            [toX, y]
-        ].map(function(i) { return i.join(",") }).join(" "));
+        if ( edge.attributes["isAsync"] ) {
+            var arrowUpper = this.createSVGElement("path");
+            arrowUpper.setAttribute("stroke", this.getEdgeStrokeColor(edge));
+            arrowUpper.setAttribute("d", "M " + arrowFromX + " " + ( y - arrowHeight / 2 ) + " L " + toX + " " + y);
+            this.svg.appendChild(arrowUpper);
 
-        this.svg.appendChild(path);
-        this.svg.appendChild(arrowHead);
+            var arrowSupper = this.createSVGElement("path");
+            arrowSupper.setAttribute("stroke", this.getEdgeStrokeColor(edge));
+            arrowSupper.setAttribute("d", "M " + arrowFromX + " " + ( y + arrowHeight / 2 ) + " L " + toX + " " + y);
+            this.svg.appendChild(arrowSupper);
 
-        if ( edge.attributes && edge.attributes["label"] !== undefined ) {
-            var textbox = this.createSVGElement('text');
-            textbox.textContent = edge.attributes["label"];
-            textbox.setAttribute("class", "edge-text");
-            if ( fromX < toX ) {
-                textbox.setAttribute("x", fromX + 5);
-            } else {
-                textbox.setAttribute("x", toX + 20);
-            }
-            textbox.setAttribute("y", y - 5);
-            this.svg.appendChild(textbox);
+        } else {
+            var arrowHead = this.createSVGElement("polygon");
+            arrowHead.setAttribute("stroke", this.getEdgeStrokeColor(edge));
+            arrowHead.setAttribute("points", [
+                [arrowFromX, y - arrowHeight/2],
+                [arrowFromX, y + arrowHeight/2],
+                [toX, y]
+            ].map(function(i) { return i.join(",") }).join(" "));
+            this.svg.appendChild(arrowHead);
         }
+    };
+
+    Drawer.SVG.prototype.drawEdgeText = function (edge, options)
+    {
+        var fromX = options["fromX"];
+        var toX   = options["toX"];
+        var y     = options["y"];
+
+        var textbox = this.createSVGElement('text');
+        textbox.textContent = edge.attributes["label"];
+        textbox.setAttribute("class", "edge-text");
+        if ( fromX < toX ) {
+            textbox.setAttribute("x", fromX + 5);
+        } else {
+            textbox.setAttribute("x", toX + 20);
+        }
+        textbox.setAttribute("y", y - 5);
+        this.svg.appendChild(textbox);
     };
 
     Drawer.SVG.prototype.drawLifeLines = function() {
