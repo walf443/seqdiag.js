@@ -50,11 +50,12 @@ require('./test_helper.js');
             "B -->> C;" +
             "B <<-- C;" +
             "A <<- B;" +
+            "A -> A;" +
         "}");
 
         var diagram = Seqdiag.DiagramBuilder.build(ast);
         q.ok(diagram instanceof Seqdiag.Diagram, "diagram OK");
-        q.equal(diagram.edges.length, 8);
+        q.equal(diagram.edges.length, 9);
 
         q.equal(diagram.edges[0].attributes["type"], "normal", "normal OK");
         q.equal(diagram.edges[0].attributes["isReturn"], false, "isReturn OK");
@@ -96,5 +97,9 @@ require('./test_helper.js');
         q.equal(diagram.edges[7].attributes["isDotted"], false, "isDotted OK");
         q.equal(diagram.edges[7].attributes["isAsync"],  true, "isAsync OK");
 
+        q.equal(diagram.edges[8].attributes["type"], "self_reference", "self_reference OK");
+        q.equal(diagram.edges[8].attributes["isReturn"], false, "isReturn OK");
+        q.equal(diagram.edges[8].attributes["isDotted"], false, "isDotted OK");
+        q.equal(diagram.edges[8].attributes["isAsync"],  false, "isAsync OK");
     });
 })();
