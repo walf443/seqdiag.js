@@ -147,5 +147,35 @@ require('./test_helper.js');
         q.equal(ast[1]["stmt"][7][0], "edge", "statement should be edge");
         q.equal(ast[1]["stmt"][7][1] , "return_async", "edge type should be dotted");
     });
+
+    q.test('auto return edge', function() {
+        var ast = Seqdiag.Parser.parse("seqdiag {\n" + 
+            "A => B;" +
+            "A ==> B;" +
+            "A =>> B;" +
+            "A ==>> B;" +
+        "}");
+
+        q.ok(ast instanceof Array, "should return tuple");
+        q.equal(ast[0], "graph", "token should be graph");
+
+        q.ok(ast[1] instanceof Object, "graph has token attribute");
+        q.equal(ast[1]["id"], "seqdiag", "graph attribute should have 'id'");
+
+        q.ok(ast[1]["stmt"] instanceof Array, "graph attribute should have stmt");
+
+        // for node under_score
+        q.equal(ast[1]["stmt"][0][0], "edge", "statement should be edge");
+        q.equal(ast[1]["stmt"][0][1] , "bidirectional", "edge type should be bidirectional");
+
+        q.equal(ast[1]["stmt"][1][0], "edge", "statement should be edge");
+        q.equal(ast[1]["stmt"][1][1] , "bidirectional_dotted", "edge type should be bidirectional_dotted");
+
+        q.equal(ast[1]["stmt"][2][0], "edge", "statement should be edge");
+        q.equal(ast[1]["stmt"][2][1] , "bidirectional_async", "edge type should be bidirectional_async");
+
+        q.equal(ast[1]["stmt"][3][0], "edge", "statement should be edge");
+        q.equal(ast[1]["stmt"][3][1] , "bidirectional_async_dotted", "edge type should be bidirectional_async_dotted");
+    });
 })();
 
