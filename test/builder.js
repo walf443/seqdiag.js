@@ -102,4 +102,31 @@ require('./test_helper.js');
         q.equal(diagram.edges[8].attributes["isDotted"], false, "isDotted OK");
         q.equal(diagram.edges[8].attributes["isAsync"],  false, "isAsync OK");
     });
+
+    q.test('auto return edge', function() {
+        var ast = Seqdiag.Parser.parse("seqdiag {\n" + 
+            "A => B;" +
+            "A ==> B;" +
+            "A =>> B;" +
+            "A ==>> B;" +
+        "}");
+        var diagram = Seqdiag.DiagramBuilder.build(ast);
+        q.ok(diagram instanceof Seqdiag.Diagram, "diagram OK");
+        q.equal(diagram.edges.length, 4 * 2);
+
+        q.equal(diagram.edges[0].attributes["type"], "normal", "normal OK");
+        q.equal(diagram.edges[0].attributes["isReturn"], false, "isReturn OK");
+        q.equal(diagram.edges[0].attributes["isDotted"], false, "isDotted OK");
+        q.equal(diagram.edges[0].attributes["isAsync"],  false, "isAsync OK");
+        q.equal(diagram.edges[0].from.id, "A", "from OK");
+        q.equal(diagram.edges[0].to.id, "B", "from OK");
+        q.equal(diagram.edges[1].attributes["type"], "normal", "normal OK");
+        q.equal(diagram.edges[1].attributes["isReturn"], false, "isReturn OK");
+        q.equal(diagram.edges[1].attributes["isDotted"], false, "isDotted OK");
+        q.equal(diagram.edges[1].attributes["isAsync"],  false, "isAsync OK");
+        q.equal(diagram.edges[1].from.id, "B", "from OK");
+        q.equal(diagram.edges[1].to.id, "A", "from OK");
+
+
+    });
 })();
