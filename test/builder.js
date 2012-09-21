@@ -127,6 +127,31 @@ require('./test_helper.js');
         q.equal(diagram.edges[1].from.id, "B", "from OK");
         q.equal(diagram.edges[1].to.id, "A", "from OK");
 
+        q.equal(diagram.edges[2].attributes["type"], "dotted", "normal OK");
+        q.equal(diagram.edges[2].attributes["isReturn"], false, "isReturn OK");
+        q.equal(diagram.edges[2].attributes["isDotted"], true, "isDotted OK");
+        q.equal(diagram.edges[2].attributes["isAsync"],  false, "isAsync OK");
+        q.equal(diagram.edges[2].from.id, "A", "from OK");
+        q.equal(diagram.edges[2].to.id, "B", "from OK");
+        q.equal(diagram.edges[3].attributes["type"], "dotted", "normal OK");
+        q.equal(diagram.edges[3].attributes["isReturn"], false, "isReturn OK");
+        q.equal(diagram.edges[3].attributes["isDotted"], true, "isDotted OK");
+        q.equal(diagram.edges[3].attributes["isAsync"],  false, "isAsync OK");
+        q.equal(diagram.edges[3].from.id, "B", "from OK");
+        q.equal(diagram.edges[3].to.id, "A", "from OK");
+
+        q.equal(diagram.edges[4].attributes["type"], "async", "normal OK");
+        q.equal(diagram.edges[4].attributes["isReturn"], false, "isReturn OK");
+        q.equal(diagram.edges[4].attributes["isDotted"], false, "isDotted OK");
+        q.equal(diagram.edges[4].attributes["isAsync"],  true, "isAsync OK");
+        q.equal(diagram.edges[4].from.id, "A", "from OK");
+        q.equal(diagram.edges[4].to.id, "B", "from OK");
+        q.equal(diagram.edges[5].attributes["type"], "async", "normal OK");
+        q.equal(diagram.edges[5].attributes["isReturn"], false, "isReturn OK");
+        q.equal(diagram.edges[5].attributes["isDotted"], false, "isDotted OK");
+        q.equal(diagram.edges[5].attributes["isAsync"],  true, "isAsync OK");
+        q.equal(diagram.edges[5].from.id, "B", "from OK");
+        q.equal(diagram.edges[5].to.id, "A", "from OK");
 
     });
 })();
