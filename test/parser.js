@@ -177,5 +177,33 @@ require('./test_helper.js');
         q.equal(ast[1]["stmt"][3][0], "edge", "statement should be edge");
         q.equal(ast[1]["stmt"][3][1] , "bidirectional_async_dotted", "edge type should be bidirectional_async_dotted");
     });
+
+    q.test('separator', function() {
+        var ast = Seqdiag.Parser.parse("seqdiag {\n" +
+            "A -> B;" +
+            "=== Separator line ===" +
+            "A -> B;" +
+            "... Separator line ..." +
+            "A -> B;" +
+        "}");
+
+        q.ok(ast instanceof Array, "should return tuple");
+        q.equal(ast[0], "graph", "token should be graph");
+
+        q.equal(ast[1]["stmt"][0][0], "edge", "statement should be edge");
+
+        q.equal(ast[1]["stmt"][1][0], "separator", "statement should be separator");
+        q.equal(ast[1]["stmt"][1][1], "normal", "separator type should be normal");
+        q.equal(ast[1]["stmt"][1][2], "Separator line ", "separator comment OK");
+
+        q.equal(ast[1]["stmt"][2][0], "edge", "statement should be edge");
+
+        q.equal(ast[1]["stmt"][3][0], "separator", "statement should be separator");
+        q.equal(ast[1]["stmt"][3][1], "delay", "separator type should be normal");
+        q.equal(ast[1]["stmt"][3][2], "Separator line ", "separator comment OK");
+
+        q.equal(ast[1]["stmt"][4][0], "edge", "statement should be edge");
+
+    });
 })();
 
