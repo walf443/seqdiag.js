@@ -167,12 +167,20 @@ require('./test_helper.js');
         "}");
         var diagram = Seqdiag.DiagramBuilder.build(ast);
         q.ok(diagram instanceof Seqdiag.Diagram, "diagram OK");
-        q.equal(diagram.separators.length, 2);
+
+        q.equal(diagram.separators.length, 2, 'separators length ok');
+        q.equal(diagram.sequences.length, 5, 'sequences length ok');
+
         q.equal(diagram.separators[0].type, "normal", "separator's type OK");
         q.equal(diagram.separators[0].comment, "Separator line ", "separator's comment OK");
 
         q.equal(diagram.separators[1].type, "delay", "separator's type OK");
         q.equal(diagram.separators[1].comment, "Separator line ", "separator's comment OK");
 
+        q.ok(diagram.sequences[0] instanceof Seqdiag.Edge, 'edge ok');
+        q.ok(diagram.sequences[1] instanceof Seqdiag.Separator, 'separator ok');
+        q.ok(diagram.sequences[2] instanceof Seqdiag.Edge, 'edge ok');
+        q.ok(diagram.sequences[3] instanceof Seqdiag.Separator, 'separator ok');
+        q.ok(diagram.sequences[4] instanceof Seqdiag.Edge, 'edge ok');
     });
 })();
