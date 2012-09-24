@@ -156,4 +156,23 @@ require('./test_helper.js');
         q.equal(diagram.edges[5].to.id, "A", "from OK");
 
     });
+
+    q.test('separator', function() {
+        var ast = Seqdiag.Parser.parse("seqdiag {\n" +
+            "A -> B;" +
+            "=== Separator line ===" +
+            "A -> B;" +
+            "... Separator line ..." +
+            "A -> B;" +
+        "}");
+        var diagram = Seqdiag.DiagramBuilder.build(ast);
+        q.ok(diagram instanceof Seqdiag.Diagram, "diagram OK");
+        q.equal(diagram.separators.length, 2);
+        q.equal(diagram.separators[0].type, "normal", "separator's type OK");
+        q.equal(diagram.separators[0].comment, "Separator line ", "separator's comment OK");
+
+        q.equal(diagram.separators[1].type, "delay", "separator's type OK");
+        q.equal(diagram.separators[1].comment, "Separator line ", "separator's comment OK");
+
+    });
 })();
