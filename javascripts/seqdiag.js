@@ -41,6 +41,15 @@
     };
 
     // -----------------------------------------------------------------------------------------
+    // @class Separator
+    //
+    var Separator = function(type, comment) {
+        this.type = type;
+        this.comment = comment;
+        return this;
+    };
+
+    // -----------------------------------------------------------------------------------------
     // @class Diagram
     //
     var Diagram = function() {
@@ -48,6 +57,8 @@
         this.nodeIds = [];
         this.nodeIdOf = {};
         this.edges = [];
+        this.separators = [];
+        this.sequences = [];
 
         return this;
     };
@@ -70,6 +81,12 @@
 
     Diagram.prototype.addEdge = function(edge) {
         this["edges"].push(edge);
+        this["sequences"].push(edge);
+    };
+
+    Diagram.prototype.addSeparator = function(separator) {
+        this["separators"].push(separator);
+        this["sequences"].push(separator);
     };
 
     // -----------------------------------------------------------------------------------------
@@ -98,8 +115,18 @@
                         diagram.addNode(node);
                         break;
                     case "edge":
-                        var edge = this.buildEdge(diagram, tokens.stmt[i]);
-                        diagram.addEdge(edge);
+                        if ( tokens.stmt[i][1].indexOf("bidirectional") > -1 ) {
+                            var edges = this.buildBidirectionalEdge(diagram, tokens.stmt[i]);
+                            diagram.addEdge(edges[0]);
+                            diagram.addEdge(edges[1]);
+                        } else {
+                            var edge = this.buildEdge(diagram, tokens.stmt[i]);
+                            diagram.addEdge(edge);
+                        }
+                        break;
+                    case "separator":
+                        var separator = this.buildSeparator(diagram, tokens.stmt[i]);
+                        diagram.addSeparator(separator);
                         break;
                 }
             }
@@ -114,6 +141,33 @@
             }
             var node = new Node(attribute["id"], attrs);
             return node;
+        },
+        buildBidirectionalEdge: function(diagram, attribute){
+            var type = attribute[1];
+            switch ( type ) {
+                case "bidirectional":
+                    type = "normal";
+                    break;
+                case "bidirectional_dotted":
+                    type = "dotted";
+                    break;
+                case "bidirectional_async":
+                    type = "async";
+                    break;
+                case "bidirectional_async_dotted":
+                    type = "async_dotted";
+                    break;
+                default:
+                    type = "normal";
+                    break;
+            }
+            var toAttr = {};
+            if ( attribute[4] ) {
+                toAttr["label"] = attribute[4][1]["return"];
+            }
+            var fromEdge = this.buildEdge(diagram, [attribute[0], type, attribute[2], attribute[3], attribute[4]]);
+            var toEdge = this.buildEdge(diagram, [attribute[0],   type, attribute[3], attribute[2], ["attributes", toAttr]]);
+            return [fromEdge, toEdge];
         },
         buildEdge: function(diagram, attribute) {
             var from = diagram.getNodeById(attribute[2]);
@@ -161,6 +215,10 @@
                 edge = new Edge(from, to, attrs);
             }
             return edge;
+        },
+        buildSeparator: function(diagram, attribute) {
+            var sep = new Separator(attribute[1], attribute[2]);
+            return sep;
         }
     };
 
@@ -188,7 +246,7 @@
 
     Drawer.SVG.prototype.draw = function() {
         this.drawNodes();
-        this.drawEdges();
+        this.drawSequences();
         this.drawLifeLines();
     };
 
@@ -233,8 +291,8 @@
         }
     };
 
-    Drawer.SVG.prototype.defaultBackgroundColor = "#ffffff";
-    Drawer.SVG.prototype.defaultStrokeColor = "#000000";
+    Drawer.SVG.prototype.defaultBackgroundColor = "#f9f9ff"; // white (little blue)
+    Drawer.SVG.prototype.defaultStrokeColor = "#000033"; // black (little navy)
 
     Drawer.SVG.prototype.getNodeFillColor = function(node) {
         return Drawer.SVG.prototype.defaultBackgroundColor;
@@ -274,24 +332,37 @@
         this.svg.appendChild(textbox);
     };
 
+    /*
+     * @obsolate
+     */
     Drawer.SVG.prototype.drawEdges = function() {
+        console.log("This method is obsolate. please use drawSequences instread.");
+        this.drawSequences();
+    }
+
+    Drawer.SVG.prototype.drawSequences = function() {
         var y = this.marginTop + this.nodeHeight;
         var svgHeight = parseInt(this.svg.getAttribute("height")) || this.defaultDiagramHeight;
-        var edgeMargin = ( svgHeight - y ) / ( this.diagram.edges.length + 1 );
-        y += edgeMargin;
-        var edges = this.diagram.edges;
-        for (var i = 0; i < edges.length; i++ ) {
-            if ( edges[i].attributes["type"] == "self_reference" ) {
-                console.log("called!!");
-                this.drawSelfReferenceEdge(edges[i], {
+        var seqMargin = ( svgHeight - y ) / ( this.diagram.sequences.length + 1 );
+        y += seqMargin;
+        var seqs = this.diagram.sequences;
+        for (var i = 0; i < seqs.length; i++ ) {
+            if ( seqs[i] instanceof Separator ) {
+                this.drawSeparator(seqs[i], {
                     "y": y,
                 });
             } else {
-                this.drawEdge(edges[i], {
-                    "y": y,
-                });
+                if ( seqs[i].attributes["type"] == "self_reference" ) {
+                    this.drawSelfReferenceEdge(seqs[i], {
+                        "y": y,
+                    });
+                } else {
+                    this.drawEdge(seqs[i], {
+                        "y": y,
+                    });
+                }
             }
-            y += edgeMargin;
+            y += seqMargin;
         }
     };
 
@@ -426,8 +497,7 @@
         }
     };
 
-    Drawer.SVG.prototype.drawEdgeText = function (edge, options)
-    {
+    Drawer.SVG.prototype.drawEdgeText = function (edge, options) {
         var fromX = options["fromX"];
         var toX   = options["toX"];
         var y     = options["y"];
@@ -440,6 +510,30 @@
         } else {
             textbox.setAttribute("x", toX + 20);
         }
+        textbox.setAttribute("y", y - 5);
+        this.svg.appendChild(textbox);
+    };
+
+    Drawer.SVG.prototype.drawSeparator = function(sep, options) {
+        var y = options["y"];
+
+        var nodes = this.diagram.nodes();
+        var firstNodeRect = this.getNodeRect(nodes[0].id);
+        var lastNodeRect = this.getNodeRect(nodes[nodes.length-1].id);
+        var fromX   = parseInt(firstNodeRect.getAttribute("x"));
+        var toX     = parseInt(lastNodeRect.getAttribute("x")) + parseInt(lastNodeRect.getAttribute("width"));
+        var path    = this.createSVGElement("path");
+        path.setAttribute("d", "M " + fromX + " " + y + " L " + toX + " " + y);
+        path.setAttribute("stroke", this.defaultStrokeColor);
+        if ( sep.type == "delay" ) {
+            path.setAttribute("stroke-dasharray", 5);
+        }
+        this.svg.appendChild(path);
+
+        var textbox = this.createSVGElement('text');
+        textbox.textContent = sep.comment;
+        textbox.setAttribute("class", "separator-text");
+        textbox.setAttribute("x", fromX + ( toX - fromX ) / 2 - textbox.textContent.length * this.charWidth / 2.0);
         textbox.setAttribute("y", y - 5);
         this.svg.appendChild(textbox);
     };
@@ -459,7 +553,7 @@
 
         var line = this.createSVGElement('path');
         line.setAttribute("d", "M " + rectCenterX + " " + rectBottomY + "L " + rectCenterX + " " + this.defaultDiagramHeight);
-        line.setAttribute("stroke", "#000000");
+        line.setAttribute("stroke", this.defaultStrokeColor);
         line.setAttribute("stroke-dasharray", 5);
         this.svg.appendChild(line);
     };
@@ -468,6 +562,7 @@
     // declare exports followings:
     exports.Node = Node;
     exports.Edge = Edge;
+    exports.Separator = Separator;
     exports.Diagram = Diagram;
     exports.DiagramBuilder = DiagramBuilder;
     exports.Drawer = Drawer;

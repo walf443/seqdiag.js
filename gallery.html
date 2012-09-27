@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="javascripts/respond.js"></script>
-	<script src="javascripts/seqdiag/parser.js"></script>
-	<script src="javascripts/seqdiag.js?v0.0.2"></script>
+	<script src="javascripts/seqdiag/parser.js?v0.0.4"></script>
+	<script src="javascripts/seqdiag.js?v0.0.4"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -41,8 +41,9 @@
         </div>
 
 		<article>
-			<section>
+			<section id="section-edge-types">
 				<h2>Edge Types</h2>
+				<div>supported from v0.0.3</div>
 				<script type="text/x-seqdiag" class="seqdiag" data-target-id="figure-edge-types">
 seqdiag {
   // normal edge and doted edge
@@ -64,6 +65,41 @@ seqdiag {
 }
 				</script>
 				<figure id="figure-edge-types"></figure>
+			</section>
+
+			<section id="section-bidirectional_edge">
+				<h2>Auto return edge</h2>
+				<div>supported from v0.0.4</div>
+				<script type="text/x-seqdiag" class="seqdiag" data-target-id="figure-bidirectional_edge">
+seqdiag {
+	A => B [label = "from", return = "return"];
+	A ==> B [label = "from dotted", return = "return"];
+	A =>> B [label = "from async", return = "return"];
+	A ==>> B [label = "from async_dotted", return = "return"];
+}
+				</script>
+				<figure id="figure-bidirectional_edge"></figure>
+			</section>
+
+			<section id="section-separators">
+				<h2>Separators</h2>
+				<div>supported from v0.0.4</div>
+				<script type="text/x-seqdiag" class="seqdiag" data-target-id="figure-separators">
+seqdiag {
+  A -> B;
+
+  // Separator
+  === Separator line ===
+
+  A -> B;
+
+  // Delay separator
+  ... Separator line ...
+
+  A -> B;
+}
+				</script>
+				<figure id="figure-separators"></figure>
 			</section>
 		</article>
 
