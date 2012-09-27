@@ -1,5 +1,22 @@
-Changes
-===================
+v0.0.4				2012-09-27 10:23:32 +0900
+------------------------------------------------------------------------
+ - refs #7 draw different separator's type between normal and delay.
+ - refs #7 draw separator's comment.
+ - refs #7 draw simple separator.
+ - fixed function define statement style.
+ - use defaultStrokeColor.
+ - refs #7 rename Drawer.SVG.drawEdges() to Drawer.SVG.drawSequences().
+ - refs #7 added sequences to Diagram.
+ - refs #7 build up Separator.
+ - refs #7 parse separator.
+ - default color scheme change a little.
+ - refs #5 return attribute should be return edge's label.
+ - refs #5 support bidirectional edge's type.
+ - refs #5 build up bidirectional edge.
+ - support bidirectional edge.
+ - update changes.
+ - update changes.
+ - added Changes.
 
 v0.0.3				2012-09-18 09:45:06 +0900
 ------------------------------------------------------------------------
