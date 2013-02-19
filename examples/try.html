@@ -19,6 +19,11 @@ seqdiag {
 	B -&gt; C [label = "B to C"];
 	C --&gt; B [label = "C to B"];
 	B --&gt; A [label = " return to A"];
+	A --&gt; A [label = " self transition on A"];
+	B --&gt; B [label = " self transition on B"];
+	D --&gt; D [label = " self transition on D"];
+	C --&gt; C [label = " self transition on C"];
+
 }
 		</textarea></div>
 		<input id="submit-preview" type="submit" value="preview">
