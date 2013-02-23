@@ -1,4 +1,3 @@
-
 /* SYNOPSIS
 //
 //      var Seqdiag = require('seqdiag');
@@ -420,12 +419,7 @@
         }
         var nextNodeRect = this.getNodeRect(nextNode.id);
         var fromX   = parseInt(target.getAttribute("x")) + parseInt(target.getAttribute("width")) / 2.0;
-        var toX   = parseInt(nextNodeRect.getAttribute("x")) + parseInt(nextNodeRect.getAttribute("width")) / 2.0;
-        if ( fromX < toX ) {
-            toX = fromX + ( toX - fromX ) / 2;
-        } else {
-            toX = fromX + ( fromX - toX ) / 2;
-        }
+        var toX = fromX + this.svg.width.baseVal.value / nodes.length / 2
 
         var fromPath = this.createSVGElement("path");
         fromPath.setAttribute("stroke", this.defaultStrokeColor);
