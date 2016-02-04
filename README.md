@@ -26,10 +26,10 @@ Example
 			window.onload = function() {
 				var taget = document.getElementById('seqdiag-text');
 				var ast = SeqdiagParser.parse(target.innerText);
-				var diagram = Seqdiag.Builder.build(ast);
+				var diagram = Seqdiag.DiagramBuilder.build(ast);
 				var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 				svg.setAttribute("width", "1024");
-				svg.setAttribute("width", "600");
+				svg.setAttribute("height", "600");
 				var drawer = new Seqdiag.Drawer.SVG(diagram, svg, document);
 				drawer.draw();
 				var figure = document.getElementById('diag');
